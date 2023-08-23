@@ -11,12 +11,82 @@
   </head>
   <body>
 
-    div.conta
+    <div class="container mt-5">
+      <h3>FAQ's</h3>
+      <form id="FAQForm">
+          <div class="form-group">
+              <label for="question">Question</label>
+              <input type="text" class="form-control" id="question" required>
+          </div>
+          <div class="form-group">
+              <label for="answer">Answer</label>
+              <input type="text" class="form-control" id="answer" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+      <div class="mt-4" id="FAQList">
+          <h3>FAQ's are as follows:-</h3>
+          <ul class="list-group" id="FAQ"></ul>
+      </div>
+  </div>
       
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script>
+      const DBName = 'FAQDB'
+      let DB;
+      function InitDB() 
+      {   console.log('step 1 done');
+          const request=window.indexedDB.open(DBName,1);
+          request.onerror = (event)=>
+          {console.log('error');};
+          request.onsuccess = (event)=>
+          {   DB= event.target.result;
+              LoadFAQ();
+          }
+          request.onupgradeneeded = (event)=>
+          {   DB = event.target.result;
+              DB.createObjectStore('FAQs',{autoIncrement:true});
+          };
+      }
+      function AddFAQ(FAQ) 
+      {   console.log('step2 done');
+          const transaction = DB.transaction(['FAQs'],'readwrite');
+          const FAQStore = transaction.objectStore('FAQs');
+          const request = FAQStore.add(FAQ);
+          request.onsuccess=()=>{LoadFAQ();}
+          transaction.onComplete= ()=>{DB.close();};
+      }
+      function LoadFAQ() 
+      {   console.log('step3 done');
+          const FAQList = document.getElementById('FAQ');
+          FAQList.innerHTML='';
+          const ObjectStore = DB.transaction('FAQs').objectStore('FAQs');
+          ObjectStore.openCursor().onsuccess = (event)=>
+          {   const cursor = event.target.result;
+              if(cursor) 
+              {   const FAQ = cursor.value;
+                  const FAQItem = document.createElement('li');
+                  FAQItem.className='list-group-item';
+                  FAQItem.textContent = `${FAQ.Question} - ${FAQ.Answer}`;
+                  FAQList.appendChild(FAQItem); 
+                  cursor.continue();
+              }};}
+      $('#FAQForm').submit(function(e)
+      {   console.log('step4 done');
+          e.preventDefault();
+          const Question = $('#question').val();
+          const Answer = $('#answer').val();
+          const FAQ = {Question, Answer};
+          AddFAQ (FAQ);
+          $('#question').val('');
+          $('#answer').val('');
+      })
+      InitDB();
+  </script>
   </body>
 </html>

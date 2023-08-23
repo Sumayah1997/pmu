@@ -21,37 +21,208 @@
                             <h3 class="mb-12 p-3">REGISTER</h3>
                             <div class="form-group container-fluid p-3">
                                 <label for="email">Email Address</label>
-                                <input type="email" class="form-control" id="email" required>
+                                <input type="email" class="form-control" id="Email" required>
                             </div>
                             <div class="form-group container-fluid p-3">
                                 <label for="fname">First Name</label>
-                                <input type="text" class="form-control" id="fname" required>
+                                <input type="text" class="form-control" id="SignUpUserName" required>
                             </div>
-                            <div class="form-group container-fluid p-3">
+                            <!-- <div class="form-group container-fluid p-3">
                                 <label for="lname">Last Name</label>
                                 <input type="text" class="form-control" id="lname" required>
-                            </div>
+                            </div> -->
                             <div class="form-group container-fluid p-3" >
                                 <label for="password">Password</label>
-                                <input type="password" class="form-control" id="password" required>
+                                <input type="password" class="form-control" id="SignUpPassword" required>
                                 </div>
+
+                                <div class="form-group container-fluid p-3" >
+                                    <label for="confirmpassword">Confirm Password</label>
+                                    <input type="password" class="form-control" id="ConfirmPassword" required>
+                                    </div>
                             <button type="submit" class="btn btn-primary">REGISTER</button>
                         </form>
-        
-                            
                 </div>
             </div>
 
         </div>
     </div>
-
+    <h3 style="text-align: center; margin-top: 79PX;">LOGIN</h3>
+        <div class="row ">
+            <div class="col-md-8 mx-auto offset-md-9"> 
+                <div class="card">
+                    <div class="card-body p-5">
+                        <p id="note" style="color: red;"></p>
+                        <form id="LoginForm"  class="mt-12 "> 
+                            <h3 class="mb-12 p-3">LOG IN</h3>
+                            <div class="form-group container-fluid p-3">
+                                <label for="fname">User Name</label>
+                                <input type="text" class="form-control" id="LoginUserName" required>
+                            </div>
+                            <div class="form-group container-fluid p-3" >
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="LoginPassword" required>
+                                <div>
+                                    <a href="#"><p class="paa">Forget Password?</p></a></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Log In</button>
+                        </form>
+                </div>
+            </div>
+    
+        </div>
+    </div>
 </div>
-<script src="signup.js"></script>
+<!-- --------------------------------------------------------------------------------------------------------- --> 
+<!-- <h3 style="text-align: center; margin-top: 79PX;">LOGIN</h3>
+<div class="container ">
+    <div class="row ">
+        <div class="col-md-8 mx-auto offset-md-9"> 
+            <div class="card">
+                <div class="card-body p-5">
+                    <p id="note" style="color: red;"></p>
+                    <form id="login"  class="mt-12 "> 
+                        <h3 class="mb-12 p-3">LOG IN</h3>
+                        <div class="form-group container-fluid p-3">
+                            <label for="fname">User Name</label>
+                            <input type="text" class="form-control" id="fname" required>
+                        </div>
+                        <div class="form-group container-fluid p-3" >
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" required>
+                            <div>
+                                <a href="#"><p class="paa">Forget Password?</p></a></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Log In</button>
+                    </form>
+    
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</div> -->
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script>
+        //Get Reference for both the Forms
+const SignUpForm = document.getElementById('SignUpForm');
+// const LoginForm = document .getElementById('LoginForm');
+
+//Event Listener for SignUp
+SignUpForm.addEventListener('submit',(e)=>{e.preventDefault();
+    const Email1 = document.getElementById('email').value;
+    const Fname1 = document.getElementById('fname').value;
+    const Lname1 = document.getElementById('lname').value;
+    const Password1 = document.getElementById('password').value;
+//Store the Information in IndexedDB
+SaveDataToIndexedDB(Email1,Fname1,Lname1, Password1);
+});
+
+//Function to Store Data in IndexedDB
+function SaveDataToIndexedDB(Email,Fname, Lname, Password)
+{   const User = {email:Email, fname:Fname, lname: Lname, password: Password};
+    const request = window.indexedDB.open('UserDB',1);
+    request.onerror = (event)=>
+    {console.error('Sorry. Error Creating IndexedDB Database');};
+    request.onsuccess = (event)=>
+    {   const db = event.target.result;
+        const transaction = db.transaction(['Users'],'readwrite');
+        const objectstore = transaction.objectStore('Users');
+        const addUserRequest = objectstore.add(User);
+        addUserRequest.onsuccess = ()=>
+        {
+            // window.location.href = "log.html";
+            console.log('User Data Saved Successfully!');
+
+
+        };
+        // transaction.onsuccess = ()=>{db.close();};
+    };
+    transaction.onsuccess = ()=>{db.close();};
+            $('email').val("");
+            $('fname').val("");
+            $('lname').val("");
+            $('password').val("");
+    request.onupgradeneeded=(event)=>
+    {   const db = event.target.result;
+        db.createObjectStore('Users',{keyPath:'fname'});
+    };
+}
+
+//Function to Checking User Data in the IndexedDB
+function CheckDataInIndexedDB(UserName, Password)
+{   const request = window.indexedDB.open('UserDB',1);
+    request.onerror = (event)=>{console.error('Error while Reading!');};
+    request.onsuccess = (event)=>
+    {   const db = event.target.result;
+        const transaction = db.transaction(['Users'],'readonly');
+        const objectstore = transaction.objectStore('Users');
+        const getUserRequest = objectstore.get(UserName);
+        getUserRequest.onsuccess = () =>
+        {   const User = getUserRequest.result;
+            if(User && User.password === Password)
+            {
+                console.log('register Successful!');
+                // window.location.href = "fristpage.html"
+            }
+            else {
+                document.getElementById("note").innerHTML=`Username or Password Incorrect`
+            }
+        };
+        transaction.oncomplete= ()=>{db.close();};
+    };
+    request.onupgradeneeded=(event)=>
+    {   const db=event.target.result;
+        db.createObjectStore('Users',{keyPath:'UserName'});
+    };
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+
+const LoginForm = document .getElementById('login');
+
+LoginForm.addEventListener('submit',(e) =>{e.preventDefault();
+    const UserName2 = document.getElementById('fname').value;
+    const Password2 = document.getElementById('password').value;
+    //Read the Information from IndexedDB
+CheckDataInIndexedDB(UserName2,Password2);
+});
+
+function CheckDataInIndexedDB(UserName, Password)
+{   const request = window.indexedDB.open('UserDB',1);
+    request.onerror = (event)=>{console.error('Error while Reading!');};
+    request.onsuccess = (event)=>
+    {   const db = event.target.result;
+        const transaction = db.transaction(['Users'],'readonly');
+        const objectstore = transaction.objectStore('Users');
+        const getUserRequest = objectstore.get(UserName);
+        getUserRequest.onsuccess = () =>
+        {   const User = getUserRequest.result;
+            if(User && User.password === Password)
+            {
+                // window.location.href = "fristpage.html"
+                console.log('Login Successful!');
+            }
+            else {
+                document.getElementById("note").innerHTML=`Username or Password Incorrect`
+            }
+        };
+        transaction.oncomplete= ()=>{db.close();};
+    };
+    request.onupgradeneeded=(event)=>
+    {   const db=event.target.result;
+        db.createObjectStore('Users',{keyPath:'UserName'});
+    };
+}
+    </script>
   </body>
 </html>
